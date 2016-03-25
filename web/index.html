@@ -14,7 +14,7 @@
         <script>
 
             var camera, scene, renderer,
-            geometry, material, mesh;
+            geometry, material, mesh, pointlight;
 
             init();
             animate();
@@ -26,10 +26,15 @@
                 camera.position.z = 1000;
 
                 geometry = new THREE.BoxGeometry( 200, 200, 200 );
-                material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+                material = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
 
                 mesh = new THREE.Mesh( geometry, material );
+                mesh.rotation.x = 0.3;
                 scene.add( mesh );
+
+                pointlight = new THREE.PointLight( 0xff0040, 1, 0 );
+                pointlight.position.set(50, 1000, 1000);
+                scene.add( pointlight );
 
                 renderer = new THREE.WebGLRenderer();
                 renderer.setSize( window.innerWidth, window.innerHeight );
@@ -43,7 +48,7 @@
             }
 
             function render() {
-                mesh.rotation.x += 0.01;
+                //mesh.rotation.x += 0.01;
                 mesh.rotation.y += 0.02;
 
                 renderer.render( scene, camera );
