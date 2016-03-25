@@ -9,6 +9,7 @@
         </style>
     </head>
 <body>
+        <div id="container"></div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r75/three.js"></script>
         <script src="http://threejs.org/examples/js/controls/FlyControls.js"></script>
         <script>
@@ -22,6 +23,7 @@
             animate();
 
             function init() {
+                var container = document.getElementById( 'container' );
                 scene = new THREE.Scene();
 
                 camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
@@ -36,9 +38,19 @@
                 scene.add( mesh );
 
                 // add light
-                pointlight = new THREE.PointLight( 0xff0040, 1, 0 );
+                pointlight = new THREE.PointLight( 0xffffff, 1, 0 );
                 pointlight.position.set(50, 1000, 1000);
                 scene.add( pointlight );
+
+                // GROUND
+                var groundGeo = new THREE.PlaneBufferGeometry( 10000, 10000 );
+                var groundMat = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0x050505 } );
+                groundMat.color.setHSL( 0.095, 1, 0.75 );
+                var ground = new THREE.Mesh( groundGeo, groundMat );
+                ground.rotation.x = -Math.PI/2;
+                ground.position.y = -33;
+                scene.add( ground );
+                ground.receiveShadow = true;
 
                 // add controls
 
@@ -46,13 +58,13 @@
                 controls.movementSpeed = 50;
                 controls.rollSpeed = Math.PI / 2;
                 controls.autoForward = false;
+                controls.domElement = container;
                 controls.dragToLook = false;
 
                 renderer = new THREE.WebGLRenderer();
                 renderer.setSize( window.innerWidth, window.innerHeight );
-                controls.domElement = renderer.domElement;
 
-                document.body.appendChild( renderer.domElement );
+                container.appendChild( renderer.domElement );
             }
 
             function animate() {
