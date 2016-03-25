@@ -10,11 +10,13 @@
     </head>
 <body>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r75/three.js"></script>
-
+        <script src="http://threejs.org/examples/js/controls/FlyControls.js"></script>
         <script>
 
-            var camera, scene, renderer,
+            var camera, scene, renderer, controls, 
             geometry, material, mesh, pointlight;
+
+            var clock = new THREE.Clock();
 
             init();
             animate();
@@ -23,21 +25,32 @@
                 scene = new THREE.Scene();
 
                 camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-                camera.position.z = 1000;
+                camera.position.z = 100;
 
-                geometry = new THREE.BoxGeometry( 200, 200, 200 );
+                // add knot
+                //geometry = new THREE.BoxGeometry( 200, 200, 200 );
+                geometry = new THREE.TorusKnotGeometry( 10, 3, 100, 16, 2, 5 );
                 material = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
-
                 mesh = new THREE.Mesh( geometry, material );
-                mesh.rotation.x = 0.3;
+                mesh.rotation.z = Math.PI/2;
                 scene.add( mesh );
 
+                // add light
                 pointlight = new THREE.PointLight( 0xff0040, 1, 0 );
                 pointlight.position.set(50, 1000, 1000);
                 scene.add( pointlight );
 
+                // add controls
+
+                controls = new THREE.FlyControls( camera );
+                controls.movementSpeed = 50;
+                controls.rollSpeed = Math.PI / 2;
+                controls.autoForward = false;
+                controls.dragToLook = false;
+
                 renderer = new THREE.WebGLRenderer();
                 renderer.setSize( window.innerWidth, window.innerHeight );
+                controls.domElement = renderer.domElement;
 
                 document.body.appendChild( renderer.domElement );
             }
@@ -48,9 +61,10 @@
             }
 
             function render() {
+                var delta = clock.getDelta();
                 //mesh.rotation.x += 0.01;
                 mesh.rotation.y += 0.02;
-
+                controls.update( delta );
                 renderer.render( scene, camera );
             }
 
