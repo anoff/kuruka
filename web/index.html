@@ -11,19 +11,18 @@
 <body>
         <div id="container"></div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r75/three.js"></script>
-        <script src="http://threejs.org/examples/js/controls/FlyControls.js"></script>
+        <script src="./controls.js"></script>
         <script>
 
-            var camera, scene, renderer, controls, 
+            var camera, scene, renderer,
             geometry, material, mesh, pointlight;
 
-            var clock = new THREE.Clock();
+            var container = document.getElementById( 'container' );
 
             init();
             animate();
 
             function init() {
-                var container = document.getElementById( 'container' );
                 scene = new THREE.Scene();
 
                 camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
@@ -53,13 +52,7 @@
                 ground.receiveShadow = true;
 
                 // add controls
-
-                controls = new THREE.FlyControls( camera );
-                controls.movementSpeed = 50;
-                controls.rollSpeed = Math.PI / 2;
-                controls.autoForward = false;
-                controls.domElement = container;
-                controls.dragToLook = false;
+                document.onkeydown = Controls.processKeyDown;
 
                 renderer = new THREE.WebGLRenderer();
                 renderer.setSize( window.innerWidth, window.innerHeight );
@@ -73,10 +66,8 @@
             }
 
             function render() {
-                var delta = clock.getDelta();
                 //mesh.rotation.x += 0.01;
                 mesh.rotation.y += 0.02;
-                controls.update( delta );
                 renderer.render( scene, camera );
             }
 
