@@ -12,10 +12,10 @@
         <div id="container"></div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r75/three.js"></script>
         <script src="./controls.js"></script>
+        <script src="./map.js"></script>
         <script>
 
-            var camera, scene, renderer,
-            geometry, material, mesh, pointlight;
+            var camera, scene, renderer;
 
             var container = document.getElementById( 'container' );
 
@@ -26,36 +26,29 @@
                 scene = new THREE.Scene();
 
                 camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-                camera.position.z = 100;
+                camera.rotation.y = Math.PI;
 
-                // add knot
-                //geometry = new THREE.BoxGeometry( 200, 200, 200 );
-                geometry = new THREE.TorusKnotGeometry( 10, 3, 100, 16, 2, 5 );
-                material = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
-                mesh = new THREE.Mesh( geometry, material );
-                mesh.rotation.z = Math.PI/2;
-                scene.add( mesh );
+                // add spikes
+                const SPIKE_COUNT = 10;
+                const MAX_WIDTH = 200;
+                const MAX_LEN = 1000;
+                for (var i = 0; i <= SPIKE_COUNT; i++) {
+                    var spike = Map.generateSpike(10, 80);
+                    spike.position.x = (Math.random() >= 0.5 ? -1 : 1) * MAX_WIDTH*Math.random();
+                    spike.position.z = MAX_LEN*Math.random();
+                    spike.castShadow = true;
+                    scene.add( spike );
+                }
 
-                // add light
-                pointlight = new THREE.PointLight( 0xffffff, 1, 0 );
-                pointlight.position.set(50, 1000, 1000);
-                scene.add( pointlight );
-
-                // GROUND
-                var groundGeo = new THREE.PlaneBufferGeometry( 10000, 10000 );
-                var groundMat = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0x050505 } );
-                groundMat.color.setHSL( 0.095, 1, 0.75 );
-                var ground = new THREE.Mesh( groundGeo, groundMat );
-                ground.rotation.x = -Math.PI/2;
-                ground.position.y = -33;
-                scene.add( ground );
-                ground.receiveShadow = true;
+                Map.createWorld();
 
                 // add controls
                 document.onkeydown = Controls.processKeyDown;
 
                 renderer = new THREE.WebGLRenderer();
                 renderer.setSize( window.innerWidth, window.innerHeight );
+                renderer.shadowMap.enabled = true;
+                //renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
                 container.appendChild( renderer.domElement );
             }
@@ -66,8 +59,6 @@
             }
 
             function render() {
-                //mesh.rotation.x += 0.01;
-                mesh.rotation.y += 0.02;
                 renderer.render( scene, camera );
             }
 
